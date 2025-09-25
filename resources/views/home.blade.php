@@ -1,28 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-<!-- Hero Section -->
-<div class="row justify-content-center mb-5">
-    <div class="col-lg-8 text-center">
-        <div class="luxury-card p-5 mb-4 animate-fadeInUp">
-            <div class="icon-large animate-float">📊</div>
-            <h1 class="display-4 text-gradient fw-bold mb-3">Excel Master</h1>
-            <p class="lead text-muted mb-4">نظام متطور لإدارة ملفات Excel وقراءة البيانات بذكاء</p>
-            <div class="d-flex justify-content-center gap-3 flex-wrap">
-                <span class="badge bg-success fs-6 px-3 py-2">
-                    <i class="fas fa-check-circle me-1"></i>متصل
-                </span>
-                <span class="badge bg-info fs-6 px-3 py-2">
-                    <i class="fas fa-shield-alt me-1"></i>آمن
-                </span>
-                <span class="badge bg-warning fs-6 px-3 py-2">
-                    <i class="fas fa-bolt me-1"></i>سريع
-                </span>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Upload Form -->
 <div class="row justify-content-center mb-5">
     <div class="col-lg-10">
