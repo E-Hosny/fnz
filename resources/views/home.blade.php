@@ -140,9 +140,14 @@
                                                     <div class="row g-2">
                                                         @foreach($columnData as $item)
                                                             <div class="col-md-6 col-lg-4">
-                                                                <div class="bg-light p-2 rounded text-center">
-                                                                    <small class="text-muted">الصف {{ $item['row'] }}</small>
+                                                                <div class="p-2 rounded text-center {{ isset($item['is_duplicate']) && $item['is_duplicate'] ? 'bg-danger text-white' : 'bg-light' }}">
+                                                                    <small class="{{ isset($item['is_duplicate']) && $item['is_duplicate'] ? 'text-white-50' : 'text-muted' }}">الصف {{ $item['row'] }}</small>
                                                                     <div class="fw-bold">{{ $item['value'] }}</div>
+                                                                    @if(isset($item['is_duplicate']) && $item['is_duplicate'])
+                                                                        <small class="text-white-50 d-block mt-1">
+                                                                            <i class="fas fa-exclamation-triangle me-1"></i>مكرر
+                                                                        </small>
+                                                                    @endif
                                                                 </div>
                                                             </div>
                                                         @endforeach

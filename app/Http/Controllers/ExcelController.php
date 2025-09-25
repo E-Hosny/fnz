@@ -13,6 +13,32 @@ class ExcelController extends Controller
     public function index()
     {
         $excelData = ExcelData::orderBy('created_at', 'desc')->get();
+        
+        // جمع جميع القيم من جميع البيانات المحفوظة للتحقق من التكرار
+        $allValues = [];
+        foreach ($excelData as $data) {
+            $columnData = json_decode($data->cell_value, true);
+            if ($columnData && is_array($columnData)) {
+                foreach ($columnData as $item) {
+                    $allValues[] = trim($item['value']);
+                }
+            }
+        }
+        
+        // حساب تكرار كل قيمة
+        $valueCounts = array_count_values($allValues);
+        
+        // إضافة معلومات التكرار لكل بيانات
+        $excelData->each(function ($data) use ($valueCounts) {
+            $columnData = json_decode($data->cell_value, true);
+            if ($columnData && is_array($columnData)) {
+                foreach ($columnData as &$item) {
+                    $item['is_duplicate'] = isset($valueCounts[trim($item['value'])]) && $valueCounts[trim($item['value'])] > 1;
+                }
+                $data->cell_value = json_encode($columnData);
+            }
+        });
+        
         return view('home', compact('excelData'));
     }
 
