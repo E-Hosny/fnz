@@ -145,7 +145,11 @@
                                                                     <div class="fw-bold">{{ $item['value'] }}</div>
                                                                     @if(isset($item['is_duplicate']) && $item['is_duplicate'])
                                                                         <small class="text-white-50 d-block mt-1">
-                                                                            <i class="fas fa-exclamation-triangle me-1"></i>مكرر
+                                                                            @if(isset($item['is_reversed']) && $item['is_reversed'])
+                                                                                <i class="fas fa-exchange-alt me-1"></i>مكرر معكوس
+                                                                            @else
+                                                                                <i class="fas fa-exclamation-triangle me-1"></i>مكرر
+                                                                            @endif
                                                                         </small>
                                                                     @endif
                                                                 </div>

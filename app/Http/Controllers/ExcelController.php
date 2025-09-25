@@ -14,32 +14,67 @@ class ExcelController extends Controller
     {
         $excelData = ExcelData::orderBy('created_at', 'desc')->get();
         
-        // جمع جميع القيم من جميع البيانات المحفوظة للتحقق من التكرار
-        $allValues = [];
+        // جمع جميع القيم الأصلية من جميع البيانات المحفوظة
+        $originalValues = [];
         foreach ($excelData as $data) {
             $columnData = json_decode($data->cell_value, true);
             if ($columnData && is_array($columnData)) {
                 foreach ($columnData as $item) {
-                    $allValues[] = trim($item['value']);
+                    $originalValues[] = trim($item['value']);
                 }
             }
         }
         
-        // حساب تكرار كل قيمة
-        $valueCounts = array_count_values($allValues);
         
         // إضافة معلومات التكرار لكل بيانات
-        $excelData->each(function ($data) use ($valueCounts) {
+        $excelData->each(function ($data) use ($originalValues) {
             $columnData = json_decode($data->cell_value, true);
             if ($columnData && is_array($columnData)) {
                 foreach ($columnData as &$item) {
-                    $item['is_duplicate'] = isset($valueCounts[trim($item['value'])]) && $valueCounts[trim($item['value'])] > 1;
+                    $value = trim($item['value']);
+                    $reversedValue = $this->reverseText($value);
+                    
+                    // فحص التكرار للنص الأصلي
+                    $originalCount = array_count_values($originalValues)[$value] ?? 0;
+                    $isOriginalDuplicate = $originalCount > 1;
+                    
+                    // فحص التكرار للنص المعكوس
+                    $isReversedDuplicate = false;
+                    if ($reversedValue !== $value) {
+                        foreach ($originalValues as $originalValue) {
+                            if ($originalValue === $reversedValue) {
+                                $isReversedDuplicate = true;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    
+                    $item['is_duplicate'] = $isOriginalDuplicate || $isReversedDuplicate;
+                    $item['is_reversed'] = $isReversedDuplicate && !$isOriginalDuplicate;
                 }
                 $data->cell_value = json_encode($columnData);
             }
         });
         
         return view('home', compact('excelData'));
+    }
+
+    /**
+     * عكس النص مع الحفاظ على الأرقام والرموز
+     */
+    private function reverseText($text)
+    {
+        // تقسيم النص إلى أجزاء مفصولة بـ - أو مسافات أو أي فاصل
+        $parts = preg_split('/([-,\s]+)/', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
+        $reversedParts = [];
+        
+        // عكس ترتيب الأجزاء (وليس عكس كل جزء منفرداً)
+        for ($i = count($parts) - 1; $i >= 0; $i--) {
+            $reversedParts[] = $parts[$i];
+        }
+        
+        return implode('', $reversedParts);
     }
 
     public function upload(Request $request)
