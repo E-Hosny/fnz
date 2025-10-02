@@ -68,8 +68,12 @@
 
                 <!-- Submit Button -->
                 <div class="text-center">
-                    <button type="submit" class="btn btn-gradient btn-lg px-5 py-3 animate-pulse-glow">
-                        <i class="fas fa-upload me-2"></i>رفع الملف وقراءة البيانات
+                    <button type="submit" id="uploadBtn" class="btn btn-gradient btn-lg px-5 py-3 animate-pulse-glow">
+                        <i class="fas fa-upload me-2" id="uploadIcon"></i>
+                        <span id="uploadText">رفع الملف وقراءة البيانات</span>
+                        <span id="loadingText" style="display: none;">
+                            <i class="fas fa-spinner fa-spin me-2"></i>جاري الرفع...
+                        </span>
                     </button>
                 </div>
             </form>
@@ -204,6 +208,41 @@ document.addEventListener('DOMContentLoaded', function() {
     cards.forEach((card, index) => {
         card.style.animationDelay = `${index * 0.2}s`;
     });
+
+    // إضافة حالة التحميل للزر
+    const uploadForm = document.querySelector('form[action="{{ route('excel.upload') }}"]');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const uploadIcon = document.getElementById('uploadIcon');
+    const uploadText = document.getElementById('uploadText');
+    const loadingText = document.getElementById('loadingText');
+
+    if (uploadForm && uploadBtn) {
+        uploadForm.addEventListener('submit', function(e) {
+            // التحقق من صحة النموذج قبل إظهار التحميل
+            const fileInput = uploadForm.querySelector('input[name="excel_file"]');
+            const columnInput = uploadForm.querySelector('input[name="column_reference"]');
+            
+            if (fileInput.files.length === 0) {
+                alert('يرجى اختيار ملف Excel');
+                e.preventDefault();
+                return;
+            }
+            
+            if (!columnInput.value.trim()) {
+                alert('يرجى إدخال رمز العمود');
+                e.preventDefault();
+                return;
+            }
+
+            // إظهار حالة التحميل
+            uploadBtn.disabled = true;
+            uploadBtn.classList.add('btn-secondary');
+            uploadBtn.classList.remove('btn-gradient');
+            uploadIcon.style.display = 'none';
+            uploadText.style.display = 'none';
+            loadingText.style.display = 'inline';
+        });
+    }
 });
 </script>
 @endsection
